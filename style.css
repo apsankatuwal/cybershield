@@ -1,0 +1,195 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f7fb;
+    color: #14213d;
+    line-height: 1.6;
+}
+
+/* NAVBAR */
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 8%;
+    background: white;
+    border-bottom: 1px solid #e5eaf0;
+}
+
+header h1 {
+    font-size: 24px;
+}
+
+nav {
+    display: flex;
+    gap: 30px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #526174;
+    font-weight: bold;
+}
+
+nav a:hover {
+    color: #1769ff;
+}
+
+/* MAIN */
+
+main {
+    max-width: 1100px;
+    margin: auto;
+}
+
+/* SCANNER */
+
+#scanner {
+    text-align: center;
+    padding: 90px 20px 60px;
+}
+
+#scanner h2 {
+    font-size: 52px;
+    line-height: 1.1;
+    margin-bottom: 20px;
+}
+
+#scanner p {
+    color: #68768a;
+    font-size: 18px;
+    max-width: 650px;
+    margin: 0 auto 35px;
+}
+
+textarea {
+    display: block;
+    width: 100%;
+    max-width: 850px;
+    height: 180px;
+    margin: auto;
+    padding: 20px;
+
+    border: 1px solid #d8e0ea;
+    border-radius: 15px;
+
+    background: white;
+
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+
+    resize: vertical;
+    outline: none;
+}
+
+textarea:focus {
+    border-color: #1769ff;
+}
+
+/* BUTTON */
+
+button {
+    margin-top: 18px;
+    padding: 15px 30px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #1769ff;
+    color: white;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+button:hover {
+    background: #0d55d8;
+}
+
+/* RESULTS */
+
+#results {
+    padding: 50px 20px;
+}
+
+#results h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#resultContent {
+    max-width: 850px;
+    margin: auto;
+
+    background: white;
+    padding: 30px;
+
+    border-radius: 15px;
+    border: 1px solid #e1e7ef;
+
+    text-align: center;
+    color: #68768a;
+}
+
+/* LEARN */
+
+#learn {
+    margin: 50px 20px 80px;
+    padding: 50px;
+
+    background: #102a56;
+    color: white;
+
+    border-radius: 20px;
+    text-align: center;
+}
+
+#learn p {
+    margin-top: 10px;
+    color: #c8d4e7;
+}
+
+/* FOOTER */
+
+footer {
+    padding: 30px;
+    text-align: center;
+
+    background: white;
+    border-top: 1px solid #e5eaf0;
+
+    color: #68768a;
+}
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+
+    header {
+        padding: 18px 5%;
+    }
+
+    nav {
+        gap: 12px;
+    }
+
+    #scanner {
+        padding-top: 60px;
+    }
+
+    #scanner h2 {
+        font-size: 38px;
+    }
+
+    #learn {
+        padding: 35px 20px;
+    }
+}
