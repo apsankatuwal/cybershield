@@ -296,6 +296,8 @@ function scan() {
 
 function showResult(score, risk, icon, detected) {
 
+    recordScan(score, risk);
+
     let warnings = detected.map((item, index) => {
 
         return `
@@ -475,6 +477,103 @@ function showResult(score, risk, icon, detected) {
         behavior: "smooth",
         block: "center"
     });
+}
+
+
+/* =========================
+   SCAN HISTORY DASHBOARD
+========================= */
+
+const scanHistory = [];
+
+function recordScan(score, risk) {
+
+    scanHistory.push({
+        score,
+        risk,
+        time: new Date()
+    });
+
+    renderHistory();
+
+}
+
+
+function renderHistory() {
+
+    const historyChart =
+        document.getElementById("historyChart");
+
+    if (!historyChart) return;
+
+
+    const total = scanHistory.length;
+
+    const flagged = scanHistory.filter(
+        entry => entry.score >= 30
+    ).length;
+
+    const avg = total
+        ? Math.round(
+            scanHistory.reduce(
+                (sum, entry) => sum + entry.score,
+                0
+            ) / total
+          )
+        : 0;
+
+    document.getElementById("statTotal").textContent = total;
+    document.getElementById("statThreats").textContent = flagged;
+    document.getElementById("statAvg").textContent = avg;
+
+
+    if (!total) {
+
+        historyChart.innerHTML = `
+            <div class="history-empty">
+                <div>📈</div>
+                <p>Scan a message to start building your history.</p>
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    const recent = scanHistory.slice(-15);
+
+    historyChart.innerHTML = recent.map(entry => {
+
+        const color =
+            entry.score >= 60 ? "#e56845" :
+            entry.score >= 30 ? "#f0ad4e" :
+            "#5bb875";
+
+        const height = Math.max(entry.score, 4);
+
+        const timeLabel = entry.time.toLocaleTimeString(
+            [], { hour: "2-digit", minute: "2-digit" }
+        );
+
+        return `
+            <div class="history-bar-wrap">
+
+                <div
+                    class="history-bar"
+                    style="height:${height}%;background:${color};"
+                ></div>
+
+                <span class="history-bar-score">${entry.score}</span>
+                <span class="history-bar-time">${timeLabel}</span>
+
+            </div>
+        `;
+
+    }).join("");
+
+    historyChart.scrollLeft = historyChart.scrollWidth;
+
 }
 
 
@@ -723,4 +822,5 @@ document.addEventListener(
         }
 
     }
+
 );

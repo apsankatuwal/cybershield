@@ -32,7 +32,9 @@
             <a href="#scanner">Scanner</a>
             <a href="#results">Analysis</a>
             <a href="#tips">Safety Tips</a>
+            <a href="#history">History</a>
         </nav>
+        
 
         <div class="status">
             <i></i>
@@ -311,7 +313,55 @@
             </div>
 
         </section>
+<!-- HISTORY DASHBOARD -->
+<section id="history" class="section">
 
+    <div class="section-title reveal">
+
+        <span>📊 — TRACK IT</span>
+
+        <h2>Your scan history</h2>
+
+        <p>
+            See how your risk scores have trended over time.
+        </p>
+
+    </div>
+
+
+    <div class="history-card tilt reveal">
+
+        <div class="history-stats">
+
+            <div class="stat">
+                <small>TOTAL SCANS</small>
+                <strong id="statTotal">0</strong>
+            </div>
+
+            <div class="stat">
+                <small>FLAGGED</small>
+                <strong id="statThreats">0</strong>
+            </div>
+
+            <div class="stat">
+                <small>AVG RISK</small>
+                <strong id="statAvg">0</strong>
+            </div>
+
+        </div>
+
+        <div id="historyChart" class="history-chart">
+
+            <div class="history-empty">
+                <div>📈</div>
+                <p>Scan a message to start building your history.</p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
 
         <!-- TIPS -->
         <section id="tips" class="section tips-section">
