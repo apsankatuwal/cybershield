@@ -1,6 +1,5 @@
 const scanInput = document.getElementById("scanInput");
 const scanButton = document.getElementById("scanButton");
-const clearButton = document.getElementById("clearButton");
 const results = document.getElementById("resultContent");
 
 scanButton.addEventListener("click", analyzeThreat);
@@ -8,20 +7,26 @@ scanButton.addEventListener("click", analyzeThreat);
 function analyzeThreat() {
     const text = scanInput.value.trim();
 
-    if (text === "") {
+    if (!text) {
         results.innerHTML = `
-            <h3>Please enter something to analyze.</h3>
-            <p>Paste a suspicious message, email, or URL first.</p>
+            <div class="empty-result">
+                <div class="empty-icon">⚠️</div>
+                <h3>Nothing to Analyze</h3>
+                <p>Please paste a suspicious message, email, or URL first.</p>
+            </div>
         `;
         return;
     }
 
-    let score = 0;
-    let warnings = [];
-
     const message = text.toLowerCase();
 
-    // 1. Urgency detection
+    let score = 0;
+    const warnings = [];
+
+    // -----------------------------
+    // 1. URGENCY / PRESSURE
+    // -----------------------------
+
     const urgencyWords = [
         "urgent",
         "immediately",
@@ -29,36 +34,49 @@ function analyzeThreat() {
         "act now",
         "within 24 hours",
         "limited time",
-        "hurry"
+        "hurry",
+        "last chance"
     ];
 
     if (containsAny(message, urgencyWords)) {
-        score += 15;
+        score += 12;
 
-        warnings.push(
-            "Urgency or pressure tactics detected"
-        );
+        warnings.push({
+            icon: "⏰",
+            title: "Urgency detected",
+            description: "The message pressures you to act quickly."
+        });
     }
 
-    // 2. Threat detection
+    // -----------------------------
+    // 2. THREATS
+    // -----------------------------
+
     const threatWords = [
         "suspended",
         "blocked",
         "terminated",
         "legal action",
         "account will be closed",
-        "account will be locked"
+        "account will be locked",
+        "police",
+        "arrest"
     ];
 
     if (containsAny(message, threatWords)) {
-        score += 20;
+        score += 18;
 
-        warnings.push(
-            "Threatening or fear-based language detected"
-        );
+        warnings.push({
+            icon: "🚨",
+            title: "Threatening language",
+            description: "Fear or consequences are being used to pressure you."
+        });
     }
 
-    // 3. Prize / reward scam detection
+    // -----------------------------
+    // 3. PRIZE / REWARD SCAMS
+    // -----------------------------
+
     const prizeWords = [
         "you won",
         "you have won",
@@ -67,18 +85,24 @@ function analyzeThreat() {
         "free iphone",
         "free gift",
         "claim your prize",
-        "reward"
+        "reward",
+        "lottery"
     ];
 
     if (containsAny(message, prizeWords)) {
-        score += 20;
+        score += 18;
 
-        warnings.push(
-            "Possible prize or reward scam pattern"
-        );
+        warnings.push({
+            icon: "🎁",
+            title: "Prize or reward pattern",
+            description: "The message contains language commonly used in reward scams."
+        });
     }
 
-    // 4. Credential detection
+    // -----------------------------
+    // 4. CREDENTIAL REQUESTS
+    // -----------------------------
+
     const credentialWords = [
         "password",
         "otp",
@@ -86,18 +110,24 @@ function analyzeThreat() {
         "verification code",
         "login",
         "verify your account",
-        "confirm your identity"
+        "confirm your identity",
+        "security code"
     ];
 
     if (containsAny(message, credentialWords)) {
-        score += 20;
+        score += 18;
 
-        warnings.push(
-            "Possible request for sensitive credentials"
-        );
+        warnings.push({
+            icon: "🔑",
+            title: "Credential request",
+            description: "The message may be trying to obtain sensitive login information."
+        });
     }
 
-    // 5. Financial information
+    // -----------------------------
+    // 5. FINANCIAL REQUESTS
+    // -----------------------------
+
     const financialWords = [
         "bank account",
         "credit card",
@@ -105,32 +135,42 @@ function analyzeThreat() {
         "payment",
         "send money",
         "transfer money",
-        "banking information"
+        "banking information",
+        "account number"
     ];
 
     if (containsAny(message, financialWords)) {
-        score += 20;
+        score += 18;
 
-        warnings.push(
-            "Possible financial information request"
-        );
+        warnings.push({
+            icon: "💳",
+            title: "Financial information request",
+            description: "The message references money or sensitive financial information."
+        });
     }
 
-    // 6. Suspicious URL detection
+    // -----------------------------
+    // 6. URL ANALYSIS
+    // -----------------------------
+
     const urlPattern = /(https?:\/\/[^\s]+)/gi;
     const urls = text.match(urlPattern);
 
     if (urls) {
-
         urls.forEach((url) => {
 
-            // HTTP instead of HTTPS
-            if (url.toLowerCase().startsWith("http://")) {
-                score += 10;
+            const cleanUrl = url.replace(/[.,!?)]$/, "");
+            const lowerUrl = cleanUrl.toLowerCase();
 
-                warnings.push(
-                    "Unencrypted HTTP link detected"
-                );
+            // HTTP
+            if (lowerUrl.startsWith("http://")) {
+                score += 8;
+
+                warnings.push({
+                    icon: "🔓",
+                    title: "Unencrypted HTTP link",
+                    description: "The link does not use HTTPS encryption."
+                });
             }
 
             // URL shorteners
@@ -139,111 +179,139 @@ function analyzeThreat() {
                 "tinyurl.com",
                 "t.co",
                 "is.gd",
-                "cutt.ly"
+                "cutt.ly",
+                "shorturl.at"
             ];
 
-            if (shorteners.some(domain => url.includes(domain))) {
-                score += 20;
+            if (shorteners.some(domain => lowerUrl.includes(domain))) {
+                score += 15;
 
-                warnings.push(
-                    "URL shortening service detected"
-                );
+                warnings.push({
+                    icon: "🔗",
+                    title: "Shortened URL detected",
+                    description: "Shortened links can hide the final destination."
+                });
             }
 
-            // IP address in URL
+            // IP address
             const ipPattern =
                 /https?:\/\/(?:\d{1,3}\.){3}\d{1,3}/;
 
-            if (ipPattern.test(url)) {
-                score += 25;
+            if (ipPattern.test(cleanUrl)) {
+                score += 20;
 
-                warnings.push(
-                    "IP address used instead of a normal domain"
-                );
+                warnings.push({
+                    icon: "🌐",
+                    title: "IP address used as destination",
+                    description: "The link uses an IP address instead of a normal domain."
+                });
             }
 
             // @ symbol
-            if (url.includes("@")) {
-                score += 20;
+            if (cleanUrl.includes("@")) {
+                score += 15;
 
-                warnings.push(
-                    "Suspicious @ symbol detected in URL"
-                );
+                warnings.push({
+                    icon: "⚠️",
+                    title: "Suspicious URL structure",
+                    description: "The @ symbol can be abused to disguise a destination."
+                });
             }
 
+            // Very long URL
+            if (cleanUrl.length > 100) {
+                score += 5;
+
+                warnings.push({
+                    icon: "📏",
+                    title: "Unusually long URL",
+                    description: "Very long URLs can sometimes be used to hide suspicious destinations."
+                });
+            }
         });
     }
 
-    // Prevent score from going above 100
+    // -----------------------------
+    // FINAL SCORE
+    // -----------------------------
+
     score = Math.min(score, 100);
 
-    // Determine risk level
     let riskLevel;
+    let riskIcon;
 
-    if (score >= 70) {
+    if (score >= 75) {
         riskLevel = "HIGH RISK";
-    } else if (score >= 35) {
+        riskIcon = "🔴";
+    } else if (score >= 40) {
         riskLevel = "SUSPICIOUS";
+        riskIcon = "🟠";
     } else {
         riskLevel = "LOW RISK";
+        riskIcon = "🟢";
     }
 
-    // If nothing suspicious was detected
+    // -----------------------------
+    // NO WARNINGS
+    // -----------------------------
+
     if (warnings.length === 0) {
-        warnings.push(
-            "No major suspicious indicators detected"
-        );
+        warnings.push({
+            icon: "✅",
+            title: "No major warning signs detected",
+            description: "CyberShield did not find obvious phishing indicators."
+        });
     }
 
-    displayResults(score, riskLevel, warnings);
+    displayResults(score, riskLevel, riskIcon, warnings);
 }
 
 
+// Check whether any word exists in the message
 function containsAny(text, words) {
     return words.some(word => text.includes(word));
 }
 
 
-function displayResults(score, riskLevel, warnings) {
-
-    let riskIcon;
-
-    if (riskLevel === "HIGH RISK") {
-        riskIcon = "🔴";
-    } else if (riskLevel === "SUSPICIOUS") {
-        riskIcon = "🟠";
-    } else {
-        riskIcon = "🟢";
-    }
+// Display the result
+function displayResults(score, riskLevel, riskIcon, warnings) {
 
     const warningHTML = warnings
-        .map(warning => `<li>⚠️ ${warning}</li>`)
+        .map(warning => `
+            <div class="warning-item">
+                <span class="warning-icon">${warning.icon}</span>
+
+                <div>
+                    <strong>${warning.title}</strong>
+                    <p>${warning.description}</p>
+                </div>
+            </div>
+        `)
         .join("");
 
     let recommendation;
 
-    if (score >= 70) {
+    if (score >= 75) {
 
         recommendation = `
             <strong>Do not click or respond.</strong>
-            Avoid sharing passwords, OTPs, banking details,
+            Do not provide passwords, OTPs, banking details,
             or personal information. Verify the request through
             an official website or application.
         `;
 
-    } else if (score >= 35) {
+    } else if (score >= 40) {
 
         recommendation = `
-            Be careful before interacting with this content.
-            Verify the sender and destination independently.
+            Proceed with caution. Verify the sender and destination
+            independently before clicking links or sharing information.
         `;
 
     } else {
 
         recommendation = `
-            No major warning signs were detected.
-            However, always verify unexpected messages before
-            sharing sensitive information.
+            No major warning signs were detected. However, always
+            verify unexpected messages before sharing sensitive information.
         `;
     }
 
@@ -254,20 +322,29 @@ function displayResults(score, riskLevel, warnings) {
                 ${riskIcon}
             </div>
 
-            <h3>${riskLevel}</h3>
+            <div class="risk-label">
+                ${riskLevel}
+            </div>
 
             <div class="score">
                 ${score}<span>/100</span>
             </div>
 
-            <h4>Detected Indicators</h4>
+            <div class="score-bar">
+                <div
+                    class="score-progress"
+                    style="width: ${score}%"
+                ></div>
+            </div>
 
-            <ul>
+            <h3>Detected Indicators</h3>
+
+            <div class="warning-list">
                 ${warningHTML}
-            </ul>
+            </div>
 
             <div class="recommendation">
-                <h4>🛡️ Recommended Action</h4>
+                <h3>🛡️ Recommended Action</h3>
 
                 <p>
                     ${recommendation}
@@ -277,17 +354,3 @@ function displayResults(score, riskLevel, warnings) {
         </div>
     `;
 }
-
-
-clearButton.addEventListener("click", () => {
-
-    scanInput.value = "";
-
-    results.innerHTML = `
-        <h3>Security Analysis</h3>
-        <p>
-            Your analysis will appear here.
-        </p>
-    `;
-
-});
