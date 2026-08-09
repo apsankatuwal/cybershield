@@ -42,7 +42,7 @@ const rules = [
   },
 
   {
-    words: ["password", "otp", "verification code", "login", "passcode"],
+    words: ["password", "otp", "danger", "verification code", "login", "passcode"],
     name: "Credential Request",
     icon: "🔑",
     points: 25,
@@ -78,19 +78,27 @@ const rules = [
     text: "The message involves financial information or payment.",
   },
 
-  {
-    words: [
-      "suspended",
-      "blocked",
-      "account will be closed",
-      "legal action",
-      "penalty",
-    ],
-    name: "Threatening Language",
-    icon: "🚨",
-    points: 20,
-    text: "Fear or consequences are used to pressure you.",
-  },
+{
+  words: [
+    "suspended",
+    "blocked",
+    "account will be closed",
+    "account in danger",
+    "account is in danger",
+    "account compromised",
+    "account has been compromised",
+    "security alert",
+    "unauthorized access",
+    "legal action",
+    "penalty",
+    "your account is at risk",
+    "account at risk",
+  ],
+  name: "Threatening Language",
+  icon: "🚨",
+  points: 20,
+  text: "Fear, account danger, or consequences are used to pressure you.",
+},
 ];
 
 /* =========================
